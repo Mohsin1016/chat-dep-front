@@ -48,7 +48,7 @@ export default function Chat() {
   }, [selectedUserId]);
 
   function connectToWs() {
-    const ws = new WebSocket("ws://localhost:8001");
+    const ws = new WebSocket("wss://localhost:8001");
     setWs(ws);
     ws.addEventListener("message", handleMessage);
     ws.addEventListener("close", () => {
@@ -260,37 +260,44 @@ export default function Chat() {
     <>
       {/* Profile Image Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center z-50 bg-gray-900 bg-opacity-50">
-          <div className="bg-white p-4 rounded-lg shadow-lg max-w-sm w-full">
-            <h2 className="text-lg font-bold mb-4">Update Profile Image</h2>
+        <div className="fixed inset-0 flex items-center justify-center z-50 bg-gray-900 bg-opacity-60 backdrop-blur-sm">
+          <div className="bg-white p-6 rounded-lg shadow-2xl max-w-sm w-full relative">
+            <h2 className="text-xl font-semibold mb-6 text-gray-800 text-center">
+              Update Profile Image
+            </h2>
 
             {/* Current or new image preview */}
-            <div className="mb-4">
+            <div className="mb-6">
               <img
                 src={newProfileImage || image}
                 alt="Profile Preview"
-                className="w-32 h-32 object-cover rounded-full mx-auto"
+                className="w-32 h-32 object-cover rounded-full mx-auto border-4 border-blue-500"
               />
             </div>
 
             {/* File input to select new image */}
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleFileChange}
-              className="mb-4"
-            />
+            <label className="block mb-6">
+              <span className="block text-sm font-medium text-gray-700">
+                Select an image
+              </span>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+                className="mt-2 block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+              />
+            </label>
 
             {/* Update and Cancel buttons */}
-            <div className="flex justify-between">
+            <div className="flex justify-between items-center">
               <button
-                className="bg-blue-500 text-white px-4 py-2 rounded"
+                className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-2 rounded-lg shadow-md transition-transform transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-400"
                 onClick={updateProfileImage}
               >
                 Update
               </button>
               <button
-                className="bg-gray-500 text-white px-4 py-2 rounded"
+                className="bg-gray-600 hover:bg-gray-700 text-white font-medium px-6 py-2 rounded-lg shadow-md transition-transform transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-gray-400"
                 onClick={closeModal}
               >
                 Cancel
@@ -324,7 +331,7 @@ export default function Chat() {
               <img
                 src={image}
                 alt="Profile"
-                className="w-16 h-16 rounded-full object-contain cursor-pointer"
+                className="w-10 h-10 rounded-full object-cover cursor-pointer"
               />
               {username}
             </span>
