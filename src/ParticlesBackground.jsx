@@ -2,14 +2,13 @@ import { useCallback } from "react";
 import Particles from "react-tsparticles";
 import { loadSlim } from "tsparticles-slim";
 
-export default function ParticlesBackground() {
+export default function ParticlesBackground({ theme = "dark" }) {
   const particlesInit = useCallback(async (engine) => {
-    console.log(engine);
     await loadSlim(engine);
   }, []);
 
   const particlesLoaded = useCallback(async (container) => {
-    await console.log(container);
+    console.log("Particles loaded:", container);
   }, []);
 
   return (
@@ -19,52 +18,50 @@ export default function ParticlesBackground() {
       loaded={particlesLoaded}
       options={{
         background: {
-          // color: {
-          //     value: "#0d47a1",
-          // },
+          color: {
+            value: "#191627",
+          },
         },
         fpsLimit: 120,
         particles: {
+          color: {
+            value: "#ffffff",
+          },
           number: {
-            value: 160,
+            value: 80,
             density: {
               enable: true,
-              value_area: 1500,
+              value_area: 800,
             },
-          },
-          line_linked: {
-            enable: false,
-            opacity: 0.03,
-          },
-          move: {
-            direction: "right",
-            speed: 0.05,
-          },
-          size: {
-            value: 1,
           },
           opacity: {
-            anim: {
-              enable: true,
-              speed: 1,
-              opacity_min: 0.05,
-            },
+            value: 0.3,
           },
-        },
-        interactivity: {
-          events: {
-            onclick: {
-              enable: true,
-              mode: "push",
-            },
+          shape: {
+            type: "circle",
           },
-          modes: {
-            push: {
-              particles_nb: 1,
-            },
+          size: {
+            value: 3,
+            random: true,
+          },
+          move: {
+            enable: true,
+            speed: 1,
+            direction: "none",
+            random: false,
+            straight: false,
+            outMode: "out",
           },
         },
         detectRetina: true,
+      }}
+      style={{
+        position: "absolute",
+        width: "100%",
+        height: "100%",
+        top: 0,
+        left: 0,
+        zIndex: -1,
       }}
     />
   );
