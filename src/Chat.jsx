@@ -20,6 +20,8 @@ import { FaBars } from "react-icons/fa";
 import { notification } from "antd";
 import "../style.css";
 
+const processedMessageIds = new Set();
+
 export default function Chat() {
   const [ws, setWs] = useState(null);
   const [onlinePeople, setOnlinePeople] = useState({});
@@ -34,6 +36,8 @@ export default function Chat() {
   const [newProfileImage, setNewProfileImage] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const fileInputRef = useRef(null);
+  const wsRef = useRef(null);
+  const displayedMessageIds = useRef(new Set());
 
   // Find the selected user
   const selectedUser = selectedUserId && (
@@ -71,16 +75,35 @@ export default function Chat() {
   };
 
   useEffect(() => {
+    // Clear any existing connection before creating a new one
+    if (ws) {
+      ws.removeEventListener("message", handleMessage);
+      ws.close();
+    }
     connectToWs();
-  }, [selectedUserId]);
+    
+    // Cleanup when component unmounts
+    return () => {
+      if (ws) {
+        ws.removeEventListener("message", handleMessage);
+        ws.close();
+      }
+    };
+  }, [selectedUserId]); // Add ws to the dependency array
 
   function connectToWs() {
-    const ws = new WebSocket("ws://localhost:8000/");
-    setWs(ws);
-    ws.addEventListener("message", handleMessage);
-    ws.addEventListener("close", () => {
+    const wsConnection = new WebSocket("ws://localhost:8000/");
+    setWs(wsConnection);
+    
+    // Use a reference to the specific connection instance
+    const messageHandler = (ev) => handleMessage(ev);
+    wsConnection.addEventListener("message", messageHandler);
+    
+    wsConnection.addEventListener("close", () => {
       setTimeout(() => {
-        connectToWs();
+        if (wsConnection === ws) { // Only reconnect if this is still the current connection
+          connectToWs();
+        }
       }, 1000);
     });
   }
@@ -95,29 +118,42 @@ export default function Chat() {
   
   function handleMessage(ev) {
     const messageData = JSON.parse(ev.data);
-
+    
     if ("online" in messageData) {
       showOnlinePeople(messageData.online);
     } else if (messageData.text || messageData.file) {
-      if (messageData.sender !== id) {
-        let notificationMessage = messageData.text || "You received a new file.";
-        let description = messageData.text ? `Message: ${messageData.text}` : "";
-        if (messageData.file) {
-          description = `You received a new file. <a href="${messageData.file}" target="_blank">View File</a>`;
+      // Check if we've already processed this message ID
+      const messageId = messageData._id || JSON.stringify(messageData);
+      if (!processedMessageIds.has(messageId)) {
+        processedMessageIds.add(messageId);
+        
+        // Show notification only once per message
+        if (messageData.sender !== id) {
+          let notificationMessage = messageData.text || "You received a new file.";
+          let description = messageData.text ? `Message: ${messageData.text}` : "";
+          if (messageData.file) {
+            description = `You received a new file. <a href="${messageData.file}" target="_blank">View File</a>`;
+          }
+
+          notification.open({
+            message: `New message from ${messageData.senderName || "User"}`,
+            description: (
+              <div dangerouslySetInnerHTML={{ __html: description }} />
+            ),
+            placement: "topRight",
+          });
         }
 
-        notification.open({
-          message: `New message from ${messageData.senderName || "User"}`,
-          description: (
-            <div dangerouslySetInnerHTML={{ __html: description }} />
-          ),
-          placement: "topRight",
-        });
-      }
-
-      if (messageData.sender === selectedUserId || messageData.recipient === id) {
-        setMessages((prev) => [...prev, { ...messageData }]);
-        reorderProfile(messageData.sender);
+        if (messageData.sender === selectedUserId || messageData.recipient === id) {
+          setMessages((prev) => [...prev, { ...messageData }]);
+          reorderProfile(messageData.sender);
+        }
+        
+        // Limit the size of the set to prevent memory leaks
+        if (processedMessageIds.size > 100) {
+          const iterator = processedMessageIds.values();
+          processedMessageIds.delete(iterator.next().value);
+        }
       }
     }
   }
