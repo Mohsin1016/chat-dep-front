@@ -4,7 +4,7 @@ import { UserContextProvider } from "./UserContext";
 import Routes from "./Routes";
 
 function App() {
-  axios.defaults.baseURL = "https://final-api-1.onrender.com/";
+  axios.defaults.baseURL = "http://localhost:8000/";
   axios.defaults.withCredentials = true;
 
   return (
