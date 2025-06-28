@@ -22,7 +22,7 @@ export function UserContextProvider({ children }) {
         }
 
         const token = getCookie("token");
-        console.log("token 🍇🍇", token);
+        // console.log("token 🍇🍇", token);
 
         if (!token) {
           setLoading(false);
@@ -35,7 +35,7 @@ export function UserContextProvider({ children }) {
           },
         });
 
-        console.log("🦀🦀🦀 response in prifile ", response.data);
+        // console.log("🦀🦀🦀 response in prifile ", response.data);
         setId(response.data.userId);
         setUserName(response.data.username);
         setImage(response.data.profileImage);
