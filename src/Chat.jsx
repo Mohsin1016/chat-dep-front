@@ -89,7 +89,7 @@ export default function Chat() {
         ws.close();
       }
     };
-  }, [selectedUserId]); // Add ws to the dependency array
+  }, [selectedUserId]); 
 
   function connectToWs() {
     const wsConnection = new WebSocket("ws://localhost:8000/");
@@ -102,7 +102,7 @@ export default function Chat() {
     wsConnection.addEventListener("close", () => {
       setTimeout(() => {
         if (wsConnection === ws) { // Only reconnect if this is still the current connection
-          connectToWs();
+        connectToWs();
         }
       }, 1000);
     });
@@ -118,7 +118,7 @@ export default function Chat() {
   
   function handleMessage(ev) {
     const messageData = JSON.parse(ev.data);
-    
+
     if ("online" in messageData) {
       showOnlinePeople(messageData.online);
     } else if (messageData.text || messageData.file) {
@@ -128,25 +128,25 @@ export default function Chat() {
         processedMessageIds.add(messageId);
         
         // Show notification only once per message
-        if (messageData.sender !== id) {
+      if (messageData.sender !== id) {
           let notificationMessage = messageData.text || "You received a new file.";
           let description = messageData.text ? `Message: ${messageData.text}` : "";
-          if (messageData.file) {
-            description = `You received a new file. <a href="${messageData.file}" target="_blank">View File</a>`;
-          }
-
-          notification.open({
-            message: `New message from ${messageData.senderName || "User"}`,
-            description: (
-              <div dangerouslySetInnerHTML={{ __html: description }} />
-            ),
-            placement: "topRight",
-          });
+        if (messageData.file) {
+          description = `You received a new file. <a href="${messageData.file}" target="_blank">View File</a>`;
         }
 
+        notification.open({
+            message: `New message from ${messageData.senderName || "User"}`,
+          description: (
+            <div dangerouslySetInnerHTML={{ __html: description }} />
+          ),
+          placement: "topRight",
+        });
+      }
+
         if (messageData.sender === selectedUserId || messageData.recipient === id) {
-          setMessages((prev) => [...prev, { ...messageData }]);
-          reorderProfile(messageData.sender);
+        setMessages((prev) => [...prev, { ...messageData }]);
+        reorderProfile(messageData.sender);
         }
         
         // Limit the size of the set to prevent memory leaks
@@ -329,7 +329,7 @@ export default function Chat() {
 
   return (
     <>
-      <ParticlesBackground />
+      <ParticlesBackground className="fixed inset-0 z-10" />
       
       {/* Profile Image Modal */}
       <AnimatePresence>
@@ -405,7 +405,7 @@ export default function Chat() {
       )}
       </AnimatePresence>
 
-      <div className="relative flex h-screen">
+      <div className="relative flex h-screen bg-transparent">
         {/* Hamburger Icon for small screens */}
         <button
           onClick={toggleSidebar}
@@ -421,9 +421,9 @@ export default function Chat() {
             x: isSidebarOpen || window.innerWidth >= 640 ? 0 : "-100%"
           }}
           transition={{ type: "spring", stiffness: 300, damping: 30 }}
-          className="flex flex-col bg-[#191627] sm:translate-x-0 h-full z-40 sm:w-1/3 w-3/4 max-w-xs"
+          className="flex flex-col bg-[#191627] bg-opacity-60 backdrop-filter backdrop-blur-sm sm:translate-x-0 h-full z-20 sm:w-1/3 w-3/4 max-w-xs"
         >
-          <div className="p-4 flex items-center justify-between bg-[#242038] rounded-b-lg shadow-md">
+          <div className="p-4 flex items-center justify-between bg-[#242038] bg-opacity-60 rounded-b-lg shadow-md">
             <motion.div 
               whileHover={{ scale: 1.05 }}
               transition={{ type: "spring", stiffness: 400, damping: 10 }}
@@ -536,7 +536,7 @@ export default function Chat() {
         </motion.div>
 
         {/* Chat Area */}
-        <div className="flex flex-col flex-grow h-full bg-gradient-to-br from-[#1a1634] to-[#2d1a45] text-white">
+        <div className="flex flex-col flex-grow h-full bg-gradient-to-br from-[#1a1634]/50 to-[#2d1a45]/50 backdrop-filter backdrop-blur-sm text-white z-20">
             {!selectedUserId && (
               <div className="flex h-full items-center justify-center">
               <div className="text-center p-8 bg-white bg-opacity-5 backdrop-blur-md rounded-xl shadow-xl">
@@ -565,7 +565,7 @@ export default function Chat() {
           {selectedUserId && (
             <>
               {/* Chat Header */}
-              <div className="flex items-center p-4 border-b border-gray-700 bg-[#242038]">
+              <div className="flex items-center p-4 border-b border-gray-700 bg-[#242038] bg-opacity-60">
                 <div className="flex items-center flex-grow">
                   <div className="relative">
                     {selectedUser && (
