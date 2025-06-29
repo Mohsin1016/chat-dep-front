@@ -14,28 +14,11 @@ export function UserContextProvider({ children }) {
       console.log("profile fetching...");
       
       try {
-        function getCookie(name) {
-          const value = `; ${document.cookie}`;
-          const parts = value.split(`; ${name}=`);
-          if (parts.length === 2) return parts.pop().split(";").shift();
-          return null;
-        }
-
-        const token = getCookie("token");
-        // console.log("token 🍇🍇", token);
-
-        if (!token) {
-          setLoading(false);
-          return;
-        }
-
         const response = await axios.get("/profile", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          withCredentials: true  // This will send cookies with the request
         });
 
-        // console.log("🦀🦀🦀 response in prifile ", response.data);
+        console.log("Profile response:", response.data);
         setId(response.data.userId);
         setUserName(response.data.username);
         setImage(response.data.profileImage);

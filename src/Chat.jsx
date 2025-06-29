@@ -92,7 +92,7 @@ export default function Chat() {
   }, [selectedUserId]); 
 
   function connectToWs() {
-    const wsConnection = new WebSocket("ws://13.127.179.207:8000/");
+    const wsConnection = new WebSocket("ws://localhost:8000/");
     setWs(wsConnection);
     
     // Use a reference to the specific connection instance

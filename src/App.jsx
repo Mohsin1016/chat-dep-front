@@ -4,7 +4,7 @@ import { UserContextProvider } from "./UserContext";
 import Routes from "./Routes";
 
 function App() {
-  axios.defaults.baseURL = "http://13.127.179.207:8000/";
+  axios.defaults.baseURL = "http://localhost:8000/";
   axios.defaults.withCredentials = true;
 
   return (
