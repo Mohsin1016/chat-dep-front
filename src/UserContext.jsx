@@ -1,5 +1,6 @@
 import axios from "axios";
 import { createContext, useEffect, useState } from "react";
+import Loader from "./Loader"; // Import our Loader component
 
 export const UserContext = createContext({});
 
@@ -33,7 +34,12 @@ export function UserContextProvider({ children }) {
   }, [id]);
 
   if (loading) {
-    return <div>Loading...</div>;
+    // Replace simple text with our loader component
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-violet-900 via-purple-800 to-indigo-900">
+        <Loader size={20} color="#a30e46" speedMultiplier={0.8} />
+      </div>
+    );
   }
 
   return (

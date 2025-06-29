@@ -19,6 +19,7 @@ import {
 import { FaBars } from "react-icons/fa";
 import { notification } from "antd";
 import "../style.css";
+import Loader from "./Loader";
 
 const processedMessageIds = new Set();
 
@@ -38,6 +39,7 @@ export default function Chat() {
   const fileInputRef = useRef(null);
   const wsRef = useRef(null);
   const displayedMessageIds = useRef(new Set());
+  const [messagesLoading, setMessagesLoading] = useState(false);
 
   // Find the selected user
   const selectedUser = selectedUserId && (
@@ -288,8 +290,13 @@ export default function Chat() {
 
   useEffect(() => {
     if (selectedUserId) {
+      setMessagesLoading(true);
       axios.get("/messages/" + selectedUserId).then((res) => {
         setMessages(res.data);
+        setMessagesLoading(false);
+      }).catch(err => {
+        console.error("Error fetching messages:", err);
+        setMessagesLoading(false);
       });
     }
   }, [selectedUserId]);
@@ -593,47 +600,53 @@ export default function Chat() {
               </div>
               
               {/* Messages Area */}
-              <div className="flex-grow overflow-y-auto p-4 scrollbar-thin scrollbar-thumb-indigo-600 scrollbar-track-transparent">
-                <div className="space-y-4">
-                  {messagesWithoutDupes.map((message) => (
-                    <motion.div
-                      key={message._id}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className={`flex ${message.sender === id ? "justify-end" : "justify-start"}`}
-                    >
-                      <div
-                        className={`max-w-[70%] rounded-lg px-4 py-2 ${
-                          message.sender === id
-                            ? "bg-indigo-600 text-white rounded-br-none"
-                            : "bg-[#2d2850] text-white rounded-bl-none"
-                        }`}
-                      >
-                        {message.text && <p>{message.text}</p>}
-                        {message.file && (
-                          <div className="mt-2">
-                          <a
-                            href={message.file}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                              className="flex items-center gap-2 p-2 bg-black bg-opacity-20 rounded-md hover:bg-opacity-30 transition-all"
-                          >
-                              <IoMdAttach size={18} />
-                              <span className="underline text-sm">
-                                {message.file.split("/").pop() || "Attached File"}
-                              </span>
-                          </a>
-                          </div>
-                        )}
-                        <span className="block text-xs text-right mt-1 opacity-70">
-                          {new Date(message.createdAt || Date.now()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                        </span>
-                      </div>
-                    </motion.div>
-                  ))}
-                  <div ref={divUnderMessages}></div>
+              {messagesLoading ? (
+                <div className="flex-grow flex items-center justify-center">
+                  <Loader color="#6366f1" size={12} />
                 </div>
-              </div>
+              ) : (
+                <div className="flex-grow overflow-y-auto p-4 scrollbar-thin scrollbar-thumb-indigo-600 scrollbar-track-transparent">
+                  <div className="space-y-4">
+                    {messagesWithoutDupes.map((message) => (
+                      <motion.div
+                        key={message._id}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className={`flex ${message.sender === id ? "justify-end" : "justify-start"}`}
+                      >
+                        <div
+                          className={`max-w-[70%] rounded-lg px-4 py-2 ${
+                            message.sender === id
+                              ? "bg-indigo-600 text-white rounded-br-none"
+                              : "bg-[#2d2850] text-white rounded-bl-none"
+                          }`}
+                        >
+                          {message.text && <p>{message.text}</p>}
+                          {message.file && (
+                            <div className="mt-2">
+                            <a
+                              href={message.file}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                                className="flex items-center gap-2 p-2 bg-black bg-opacity-20 rounded-md hover:bg-opacity-30 transition-all"
+                            >
+                                <IoMdAttach size={18} />
+                                <span className="underline text-sm">
+                                  {message.file.split("/").pop() || "Attached File"}
+                                </span>
+                            </a>
+                            </div>
+                          )}
+                          <span className="block text-xs text-right mt-1 opacity-70">
+                            {new Date(message.createdAt || Date.now()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          </span>
+                        </div>
+                      </motion.div>
+                    ))}
+                    <div ref={divUnderMessages}></div>
+                  </div>
+                </div>
+              )}
               
               {/* Message Input Area */}
               <form 

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useSearchParams } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
-import { TailSpin } from "react-loader-spinner";
+import Loader from "./Loader";
 import "react-toastify/dist/ReactToastify.css";
 
 export default function VerifyEmail() {
@@ -50,8 +50,8 @@ export default function VerifyEmail() {
       <div className="bg-white shadow-lg rounded-lg p-8 w-full max-w-md">
         <div className="text-center">
           {isLoading ? (
-            <div className="flex justify-center">
-              <TailSpin height="50" width="50" color="#4fa94d" ariaLabel="loading" />
+            <div className="flex justify-center py-8">
+              <Loader color="#4fa94d" />
             </div>
           ) : (
             <div>

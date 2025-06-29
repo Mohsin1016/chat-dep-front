@@ -1,4 +1,9 @@
+import { useState } from "react";
+import Loader from "./Loader";
+
 export default function Avatar({ online, username, userId, profileImage }) {
+  const [imageLoading, setImageLoading] = useState(true);
+  
   // Ensure userId is defined and has the expected format
   if (!userId || typeof userId !== 'string') {
     return null; // or render a placeholder/avatar indicating missing user
@@ -16,12 +21,21 @@ export default function Avatar({ online, username, userId, profileImage }) {
   return (
     <div className={"w-8 h-8 relative rounded-full flex items-center justify-center "+color }>
       {profileImage ? (
-        // Display the user's profile image if it exists
-        <img
-          src={profileImage}
-          alt={`${username}'s profile`}
-          className="w-full h-full rounded-full object-contain "
-        />
+        <>
+          {imageLoading && (
+            <div className="absolute inset-0 flex items-center justify-center">
+              <Loader size={5} margin={1} />
+            </div>
+          )}
+          <img
+            src={profileImage}
+            alt={`${username}'s profile`}
+            className="w-full h-full rounded-full object-contain"
+            style={{ display: imageLoading ? "none" : "block" }}
+            onLoad={() => setImageLoading(false)}
+            onError={() => setImageLoading(false)}
+          />
+        </>
       ) : (
         // Display the first letter of the username if no profile image exists
         <div className="text-center w-full opacity-70 text-white">
