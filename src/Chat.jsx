@@ -92,7 +92,7 @@ export default function Chat() {
   }, [selectedUserId]); 
 
   function connectToWs() {
-    const wsConnection = new WebSocket("wss://13.127.179.207/");
+    const wsConnection = new WebSocket("wss://chat-dep-api.vercel.app/");
     setWs(wsConnection);
     
     // Use a reference to the specific connection instance

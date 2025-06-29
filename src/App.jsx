@@ -4,7 +4,7 @@ import { UserContextProvider } from "./UserContext";
 import Routes from "./Routes";
 
 function App() {
-  axios.defaults.baseURL = "https://13.127.179.207/";
+  axios.defaults.baseURL = "https://chat-dep-api.vercel.app/";
   axios.defaults.withCredentials = true;
 
   return (
